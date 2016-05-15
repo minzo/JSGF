@@ -16,6 +16,7 @@
 //------------------------------------------------------------------------------
 ColliObject = function( x, y, w, h, parent ) {
     GfxObject.call( this, x, y, w, h, 'rgba(255,0,0,0.2)' );
+
     this.setParent( parent );
 };
 ColliObject.prototype = new GfxObject();

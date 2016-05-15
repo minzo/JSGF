@@ -113,7 +113,7 @@ GfxLine = function( sx, sy, gx, gy, color ) {
     var self = this instanceof GfxLine
              ? this
              : Object.create( GfxLine.prototype );
-    GfxObject.call( sx, sy, gx, gy, color );
+    GfxObject.call( self, sx, sy, gx, gy, color );
 
     self.pos.x1 = sx;
     self.pos.y1 = sy;
@@ -127,7 +127,9 @@ GfxLine.prototype.proc = function( context ) {
     var pos = this.pos;
     var mtx = this.matrix;
     context.save();
-    context.setTransform( mtx.m00, mtx.m10, mtx.m01, mtx.m11, mtx.m02, mtx.m12 );
+    //context.setTransform( mtx.m00, mtx.m10, mtx.m01, mtx.m11, mtx.m02, mtx.m12 );
+    context.fillStyle = this.color;
+    context.strokeStyle = this.color;
     context.beginPath();
     context.moveTo( pos.x1, pos.y1 );
     context.lineTo( pos.x2, pos.y2 );

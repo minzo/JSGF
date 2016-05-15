@@ -23,6 +23,7 @@ function init() {
     gFileMngr.loadSound( './resource/webapp/mute.wav' );
 
     gScnMngr.entryScene( SceneGameMain,'SceneGameMain' );
+    gScnMngr.entryScene( SceneIK,'SceneIK' );;
 };
 
 function main() {

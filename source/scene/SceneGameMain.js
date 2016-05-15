@@ -21,6 +21,7 @@ SceneGameMain = function() {
     return self;
 };
 SceneGameMain.prototype = new SceneBase();
+//gScnMngr.entryScene( SceneGameMain, 'SceneGameMain' );
 
 //------------------------------------------------------------------------------
 //  ロード
