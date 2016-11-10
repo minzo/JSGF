@@ -52,6 +52,7 @@ GfxObject.prototype.draw     = function() {
 GfxObject.prototype.preproc  = function() { this.transform(); };
 GfxObject.prototype.proc     = function( context ) {};
 GfxObject.prototype.postproc = function() { this.bUpdateMatrix = false; };
+GfxObject.prototype.setParent= function( parent ) { this.parent = parent; }
 GfxObject.prototype.transform= function() {
 
     //  行列計算が既に終了していたら抜ける
