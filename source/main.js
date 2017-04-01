@@ -19,11 +19,13 @@ function init() {
     gGfxMngr = new GfxManager( screen.x, screen.y );
     gDbgMngr = new DbgManager( screen.x, screen.y );
     gScnMngr = new SceneManager( 'SceneGameMain' );
+    gObjMngr = new ObjectManager();
 
     gFileMngr.loadSound( './resource/webapp/mute.wav' );
 
     gScnMngr.entryScene( SceneGameMain,'SceneGameMain' );
-    gScnMngr.entryScene( SceneIK,'SceneIK' );;
+    gScnMngr.entryScene( SceneIK,'SceneIK' );
+//    gScnMngr.entryScene( SceneMultistageRocket, 'SceneMultistageRocket' );
 };
 
 function main() {
@@ -31,12 +33,14 @@ function main() {
     var start = Date.now();
 
     gHID.update();
-    gScnMngr.update();
     gFileMngr.update();
+    gScnMngr.update();
+    gObjMngr.update();
     gEfxMngr.update();
     gSndMngr.update();
     gGfxMngr.update();
     gDbgMngr.update();
+    gObjMngr.postUpdate();
 
     var proc_time = Date.now() - start;
     var fps = Math.floor( gDbgMngr.getFPS() );

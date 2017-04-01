@@ -15,8 +15,8 @@ Player = function( x, y ) {
              : Object.create( Player.prototype );
     TouchRect.call( self, x, y, 64, 64, 'red' );
 
-    this.prvPos = {x:0,y:0};
-    this.spd = {x:0,y:0};
+    this.prvPos = new VEC2();
+    this.spd    = new VEC2();
 
     this.objectList = [];
 

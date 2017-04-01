@@ -10,15 +10,12 @@
 //  コンストラクタ
 //------------------------------------------------------------------------------
 SceneGameMain = function() {
-    var self = this instanceof SceneGameMain
-             ? this
-             : Object.create( SceneGameMain.prototype );
-    SceneBase.call( self );
 
-    self.camera = null;
-    self.player = null;
+    SceneBase.call( this );
 
-    return self;
+    this.camera = null;
+
+    return this;
 };
 SceneGameMain.prototype = new SceneBase();
 //gScnMngr.entryScene( SceneGameMain, 'SceneGameMain' );
@@ -27,33 +24,77 @@ SceneGameMain.prototype = new SceneBase();
 //  ロード
 //------------------------------------------------------------------------------
 SceneGameMain.prototype.load   = function() {
+    gFileMngr.loadImage( 'resource/webapp/home-icon.png' );
 };
 
 //------------------------------------------------------------------------------
 //  初期化
 //------------------------------------------------------------------------------
 SceneGameMain.prototype.init   = function() {
-    this.camera = new GfxCamera();
-    this.player = new Player( 320, 100 );
-    this.block  = new Block( 320, 500, 100, 100 );
 
-    this.player.objectList = [ this.block ];
+    Col2dComponent.isVisibleCollision = true;
+
+    this.camera = new Camera();
+
+    systemGfxManager.setCamera( this.camera );
+
+    this.object = new BaseObject();
+    this.object.attachComponent( 'GfxCircle', new Gfx2dCircle(20, Gfx2dStyle.FillGreen()) );
+    this.object.attachComponent( 'ColCircle', new Col2dCircle(20) );
+    this.object.attachComponent( 'TouchCircle', new TouchCircle(10) );
+    this.object.setPos( 0, 0, 0 );
+
+    this.child = new BaseObject();
+    this.child.attachComponent( 'Rect', new Gfx2dRect(20, 20, Gfx2dStyle.FillGreen() ));
+    this.child.attachComponent( 'ColCircle', new Col2dCircle( 20 ));
+    this.child.setPos( 130, 0, 0 );
+    this.child.setParent( this.object );
+
+    this.rect1 = new BaseObject();
+    this.rect1.attachComponent( 'Rect', new Gfx2dRect(10, 10, Gfx2dStyle.FillGreen() ));
+    this.rect1.attachComponent( 'TouchRect', new TouchRect(10, 10));
+    this.rect1.setPos( 30, 30, 0 );
+    this.rect1.setParent( this.child );
+
+    this.rect2 = new BaseObject();
+    this.rect2.attachComponent( 'Image', new Gfx2dImage(30, 30, 'home-icon' ));
+    this.rect2.setPos( -30, -30, 0 )
+    this.rect2.setParent( this.child );
+
+    this.count = 0;
 };
 
 //------------------------------------------------------------------------------
 //  更新
 //------------------------------------------------------------------------------
 SceneGameMain.prototype.update = function() {
-    this.player.update();
-    this.block.update();
+
+    var sin = Math.sin(this.object.transform.rotate.y) + 1.5;
+
+    var touch = gHID.getOldestTouch();
+
+    this.object.setScale( sin, sin, sin );
+    this.child.transform.rotate.z += 0.01;
+
+    var size = systemGfxManager.getCanvasSize();
+
+    if(touch != null)
+    {
+        var vec = this.camera.getPos().add( touch.spd.toVEC3() );
+        this.camera.setPos( vec.x, vec.y, vec.z );
+    }
+
+    gObjMngr.entryObjectList( this.camera );
+    gObjMngr.entryObjectList( this.object );
+    gObjMngr.entryObjectList( this.child );
+    gObjMngr.entryObjectList( this.rect1 );
+    gObjMngr.entryObjectList( this.rect2 );
 };
 
 //------------------------------------------------------------------------------
 //  描画
 //------------------------------------------------------------------------------
 SceneGameMain.prototype.draw   = function() {
-    this.player.draw();
-    this.block.draw();
 };
 
 //------------------------------------------------------------------------------

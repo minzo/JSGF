@@ -19,24 +19,20 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 //------------------------------------------------------------------------------
 SndManager = function() {
 
-    var self = this instanceof SndManager
-             ? this
-             : Object.create( SndManager.prototype );
-
     //  SndWebAudio が用いるサウンドマネージャ用変数に設定
-    systemSndManager = self;
+    systemSndManager = this;
 
     //  conetxt の取得
-    self.context = new AudioContext();
+    this.context = new AudioContext();
 
     //  Master Volume の作成
-    self.gainNode = self.context.createGain();
-    self.gainNode.connect( self.context.destination );
+    this.gainNode = this.context.createGain();
+    this.gainNode.connect( this.context.destination );
 
     //  PlayList
-    self.playList ={};
+    this.playList ={};
 
-    return self;
+    return this;
 };
 
 

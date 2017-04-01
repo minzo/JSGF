@@ -10,12 +10,8 @@
 //  コンストラクタ
 //------------------------------------------------------------------------------
 EfxManager = function() {
-
-    var self = this instanceof EfxManager
-             ? this
-             : Object.create( EfxManager.prototype );
-    self.effectList = [];
-    return self;
+    this.effectList = [];
+    return this;
 };
 
 //------------------------------------------------------------------------------

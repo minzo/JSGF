@@ -52,6 +52,7 @@ DbgManager.prototype.update = function() {
     var _printList = this.printList;
 
     _context.save();
+    _context.setTransform(1, 0, 0, 1, 0, 0);
 
     _context.font = "40px 'sans-serif'";
 

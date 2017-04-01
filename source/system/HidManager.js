@@ -6,19 +6,19 @@
 
 (function( window, undefined ) {
 
+// 初回タッチ
+var _isFirstTap = false;
+
 //------------------------------------------------------------------------------
 //  コンストラクタ
 //------------------------------------------------------------------------------
 HidManager = function() {
 
-    var self = this instanceof HidManager
-             ? this
-             : Object.create( HidManager.prototype );
+    systemHidManager = this;
+    var self = this;
 
-    systemHidManager = self;
-
-    //　　タッチのリスト
-    self.touches = [
+    // タッチのリスト
+    this.touches = [
         new Touch(),
         new Touch(),
         new Touch(),
@@ -27,158 +27,168 @@ HidManager = function() {
         new Touch() // click 用オブジェクト
     ];
 
-    self.firstTap = true;
+    // 最新のタッチを保持
+    this.latestTouch = null;
 
+    // 最古のタッチを保持
+    this.oldestTouch = null;
+
+    // 更新処理
+    var update = function( touchEvent, delegate ) {
+        touchEvent.preventDefault();
+        var touches = touchEvent.changedTouches;
+        for( var i=0,l=touches.length; i<l; i++) {
+            var touch = touches[i];
+            var index = touches[i].identifier % ( self.touches.length - 1 );
+            delegate.call( self.touches[ index ], touch.clientX, touch.clientY );
+        }
+    }
+
+    // Touch Event
     document.addEventListener( "touchstart", function( e ){
         //  iOS の mute を解除
-        if( self.firstTap ) { gSndMngr.play( 'mute' ); self.firstTap = false; }
-        e.preventDefault();
-        for( var i=0,l=e.changedTouches.length; i<l; i++) {
-            var _eventTouch = e.changedTouches[ i ];
-            var _selfTouch  = self.touches[ _eventTouch.identifier % 5 ];
-            _selfTouch.setTrg( _eventTouch.clientX, _eventTouch.clientY );
-        }
-    } );
-    document.addEventListener( "touchmove", function( e ){
-        e.preventDefault();
-        for( var i=0,l=e.changedTouches.length; i<l; i++) {
-            var _eventTouch = e.changedTouches[ i ];
-            var _selfTouch  = self.touches[ _eventTouch.identifier % 5 ];
-            _selfTouch.pos.x = _eventTouch.clientX;
-            _selfTouch.pos.y = _eventTouch.clientY;
-        }
-    } );
-    document.addEventListener( "touchend", function( e ){
-        e.preventDefault();
-        for( var i=0,l=e.changedTouches.length; i<l; i++) {
-            var _eventTouch = e.changedTouches[ i ];
-            var _selfTouch  = self.touches[ _eventTouch.identifier % 5 ];
-            _selfTouch.setRls( _eventTouch.clientX, _eventTouch.clientY );
-        }
-    } );
-    document.addEventListener( "touchcancel", function( e ){
-        e.preventDefault();
-        for( var i=0,l=e.changedTouches.length; i<l; i++) {
-            var _eventTouch = e.changedTouches[ i ];
-            var _selfTouch  = self.touches[ _eventTouch.identifier % 5 ];
-            _selfTouch.setTrg( _eventTouch.clientX, _eventTouch.clientY );
-        }
-    });
+        if( _isFirstTap ) { gSndMngr.play( 'mute' ); _isFirstTap = false; }
+        update( e, Touch.prototype.setTrg );
+    }, false );
+    document.addEventListener( "touchmove", function( e ) {
+        update( e, Touch.prototype.setPos );
+    }, false );
+    document.addEventListener( "touchend", function( e ) {
+        update( e, Touch.prototype.setRls );
+    }, false );
+    document.addEventListener( "touchcancel", function( e ) {
+        update( e, Touch.prototype.setRls );
+    }, false );
 
+    // Mouse Event
     document.addEventListener( "mousedown", function( e ) {
         e.preventDefault();
-        var _selfTouch = self.touches[ 5 ];
-        _selfTouch.setTrg( e.clientX, e.clientY );
-    });
-    document.addEventListener( "mousemove", function( e ){
+        self.touches[ self.touches.length - 1 ].setTrg( e.clientX, e.clientY );
+    }, false );
+    document.addEventListener( "mousemove", function( e ) {
         e.preventDefault();
-        var _selfTouch = self.touches[ 5 ];
-        _selfTouch.pos.x = e.clientX;
-        _selfTouch.pos.y = e.clientY;
-    });
+        self.touches[ self.touches.length - 1 ].setPos( e.clientX, e.clientY );
+    }, false );
     document.addEventListener( "mouseup", function( e ) {
         e.preventDefault();
-        var _selfTouch = self.touches[ 5 ];
-        _selfTouch.setRls( e.clientX, e.clientY );
-    });
+        self.touches[ self.touches.length - 1 ].setRls( e.clientX, e.clientY );
+    }, false );
 
-    return self;
+    return this;
 };
-
 
 //------------------------------------------------------------------------------
 //  更新
-//
 //  MEMO: 毎フレーム呼び出すことで入力状態を最新に保つ
 //------------------------------------------------------------------------------
 HidManager.prototype.update = function() {
 
-    var _touches = this.touches;
+    this.latestTouch = null;
+    this.oldestTouch = null;
 
-    for( var i=0,l=_touches.length; i<l; i++) {
-        var _touch = _touches[ i ];
-        _touch.update();
+    var min = Number.MAX_SAFE_INTEGER;
+    var max = Number.MIN_SAFE_INTEGER;
+
+    for( var i=0, t = this.touches, l=t.length; i<l; i++)
+    {
+        t[ i ].update();
+
+        // タッチされていない状態のものは更新しない
+        if( !t[ i ].isValid() ) continue;
+
+        // 最新と最古のタッチ情報を取得する
+        var frame = t[ i ].state.getFrame();
+
+        if( frame < min ) {
+            min = frame;
+            this.latestTouch = t[ i ];
+        }
+
+        if( frame > max ) {
+            max = frame;
+            this.oldestTouch = t[ i ];
+        }
     }
 };
 
-
+//------------------------------------------------------------------------------
+// 取得系
+//------------------------------------------------------------------------------
+HidManager.prototype.getLatestTouch = function () { return this.latestTouch; }
+HidManager.prototype.getOldestTouch = function () { return this.oldestTouch; }
 
 //------------------------------------------------------------------------------
 //  Touch
-//
-//  MEMO: タッチの状態を保持するHIDManager固有クラス
+//  MEMO: タッチの状態を保持するクラス
 //------------------------------------------------------------------------------
 var Touch = function() {
 
-    var self = this instanceof Touch
-             ? this
-             : Object.create( Touch.prototype );
+    this.state = new StateControl( 'none' );
 
-    self.frame     = 0;        //  タッチされてから話されるまでのフレーム数
-    self.state     = 'none';   //  現在のタッチされている状態
-    self.stateframe= 0;        //  現在の状態が維持されているフレーム数
+    this.pos   = new VEC2( -1.0, -1.0 ); //  タッチされている位置の座標
+    this.spd   = new VEC2( -1.0, -1.0 ); //  タッチの移動速度
 
-    self.pos   = {x:0,y:0};    //  タッチされている位置の座標
-    self.spd   = {x:0,y:0};    //  タッチの移動速度
+    this.trgPos= new VEC2( -1.0, -1.0 ); //  trgされた座標
+    this.rlsPos= new VEC2( -1.0, -1.0 ); //  rlsされた座標
 
-    self.trgPos= {x:0,y:0};    //  trgされた位置の座標
-    self.rlsPos= {x:0,y:0};    //  rlsされた位置の座標
+    this.prvPos= new VEC2( -1.0, -1.0 ); //  前のフレームでタッチされていた座標
 
-    self.prvPos= {x:0,y:0};    //  前のフレームでタッチされていた位置の座標
-
-    return self;
+    return this;
 };
-
 
 //------------------------------------------------------------------------------
 //  タッチされた瞬間の状態にする
 //------------------------------------------------------------------------------
 Touch.prototype.setTrg = function( x, y ){
-
-    this.frame     = 0;
-    this.state     = 'trg';
-    this.stateframe= 0;
-
-    this.pos.x = x;
-    this.pos.y = y;
-    this.spd.x = 0;
-    this.spd.y = 0;
-
-    this.trgPos.x = x;
-    this.trgPos.y = y;
-
-    this.prvPos.x = x;
-    this.prvPos.y = y;
+    this.state.changeImmediately( 'trg' );
+    this.pos.set( x, y );
+    this.spd.setZero();
+    this.trgPos.set( x, y );
+    this.prvPos.set( x, y );
 };
-
 
 //------------------------------------------------------------------------------
 //  離された瞬間の状態にする
 //------------------------------------------------------------------------------
 Touch.prototype.setRls = function( x, y ) {
-
-    this.state     = 'rls';
-    this.stateframe= 0;
-
-    this.pos.x = x;
-    this.pos.y = y;
-
-    this.rlsPos.x = x;
-    this.rlsPos.y = y;
+    this.state.changeImmediately( 'rls' );
+    this.pos.set( x, y );
+    this.rlsPos.set( x, y );
 };
 
+//------------------------------------------------------------------------------
+//  座標を設定する
+//------------------------------------------------------------------------------
+Touch.prototype.setPos = function( x, y ) {
+    this.pos.set( x, y );
+};
+
+//------------------------------------------------------------------------------
+//  状態取得
+//------------------------------------------------------------------------------
+Touch.prototype.isTrg = function() { return this.state.get() == 'trg'; };
+Touch.prototype.isHld = function() { return this.state.get() == 'hld'; };
+Touch.prototype.isRls = function() { return this.state.get() == 'rls'; };
+Touch.prototype.isValid = function() { return this.state.get() != 'none'; };
+Touch.prototype.getPos = function() { return this.pos; };
+Touch.prototype.getSpd = function() { return this.spd; };
 
 //------------------------------------------------------------------------------
 //  更新
 //------------------------------------------------------------------------------
 Touch.prototype.update = function() {
 
+    this.state.update();
+
+    // none 状態は更新しなくていい
+    if( !this.isValid() ) return;;
+
     var pos    = this.pos;
     var spd    = this.spd;
     var prvPos = this.prvPos;
 
     //  移動速度の算出
-    if( this.state == 'hld' ) {
+    if( this.state.get() == 'hld' ) {
         spd.x    = pos.x - prvPos.x;
         spd.y    = pos.y - prvPos.y;
         prvPos.x = pos.x;
@@ -186,18 +196,14 @@ Touch.prototype.update = function() {
     }
 
     //  タッチ状態の遷移
-    if( this.state == 'trg' && this.stateframe > 0 ) {
-        this.state = 'hld';
-        this.stateframe = 0;
-    }
-    if( this.state == 'rls' && this.stateframe > 0 ) {
-        this.state = 'none';
-        this.stateframe = 0;
+    if( this.state.get() == 'trg' ) {
+        this.state.change( 'hld' );
     }
 
-    //  生存フレーム
-    this.frame++;
-    this.stateframe++;
+    if( this.state.get() == 'rls' ) {
+        this.state.change( 'none' );
+        this.stateframe = 0;
+    }
 };
 
 })( window );

@@ -9,28 +9,26 @@
 //------------------------------------------------------------------------------
 //  コンストラクタ
 //------------------------------------------------------------------------------
-FileManager = function() {
+FileManager = function( resourceDir ) {
 
-    var self = this instanceof FileManager
-             ? this
-             : Object.create( FileManager.prototype );
+    this.resourceDir = resourceDir;
 
     //  ロード中のリソースリスト
-    self.LoadedImages = {};
-    self.LoadedSounds = {};
-    self.LoadedSprites= {};
+    this.LoadedImages = {};
+    this.LoadedSounds = {};
+    this.LoadedSprites= {};
 
     //  全てのリソースが読み込まれているか
-    self.bAllImageLoaded = true;
-    self.bAllSoundLoaded = true;
-    self.bAllSpriteLoaded= true;
+    this.bAllImageLoaded = true;
+    this.bAllSoundLoaded = true;
+    this.bAllSpriteLoaded= true;
 
     //  リソースのリスト
-    self.Images = {};
-    self.Sounds = {};
-    self.Sprites= {};
+    this.Images = {};
+    this.Sounds = {};
+    this.Sprites= {};
 
-    return self;
+    return this;
 };
 
 //------------------------------------------------------------------------------
@@ -42,6 +40,10 @@ FileManager = function() {
 FileManager.prototype.pathToLabel = function( filepath ) {
     return filepath.substring( filepath.lastIndexOf( '/' ) + 1,
                                filepath.lastIndexOf( '.' ) );
+};
+
+FileManager.prototype.getExtension = function( filepath ) {
+    return filepath.substring( filepath.lastIndexOf('.') + 1 );
 };
 
 //------------------------------------------------------------------------------
@@ -104,7 +106,7 @@ FileManager.prototype.loadSound = function( filepath ) {
 
     var self  = this;
     var label = self.pathToLabel( filepath );
-    var ext   = filepath.substring( filepath.lastIndexOf('.') + 1 );
+    var ext   = self.getExtension( filepath );
 
     //  2重読み込みを回避
     if( self.Sounds[ label ] != undefined ) return;

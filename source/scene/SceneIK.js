@@ -54,10 +54,10 @@ SceneIK.prototype.init   = function() {
        this.lines[i] = new GfxLine(i*10,i*10+5,i*20,i*10+5,'red');
     }
 
-    this.rootPos = {
-        x: this.effector[this.effector.length-1].pos.x,
-        y: this.effector[this.effector.length-1].pos.y
-    }
+    this.rootPos = new VEC2().set(
+        this.effector[this.effector.length-1].pos.x,
+        this.effector[this.effector.length-1].pos.y
+    );
 };
 
 //------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ SceneIK.prototype.update = function() {
 
     var rootPos = this.rootPos;
 
-    var target = {x:0, y:0};
+    var target = new VEC2().setZero();
 
     for(var i=0; i<gHID.touches.length; i++)
     {

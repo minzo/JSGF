@@ -9,21 +9,15 @@
 //------------------------------------------------------------------------------
 //  コンストラクタ
 //
-//  @param[in] first 初期状態
+//  @param[in] initState 初期状態
 //------------------------------------------------------------------------------
-StateControl = function( first ) {
-
-    var self = this instanceof StateControl
-             ? this
-             : Object.prototype( StateControl.prototype );
-
-    self.current = first; // 現在の状態
-    self.first   = first; // 最初の状態
-    self.prev    = first; // 前の状態
-    self.next    = '';    // 次の状態
-    self.frame   = 0;     // 現在の状態のフレーム数
-
-    return self;
+StateControl = function( initState ) {
+    this.current   = initState; // 現在の状態
+    this.initState = initState; // 最初の状態
+    this.prev      = initState; // 前の状態
+    this.next      = '';    // 次の状態
+    this.frame     = 0;     // 現在の状態のフレーム数
+    return this;
 };
 
 //------------------------------------------------------------------------------
@@ -36,10 +30,20 @@ StateControl.prototype.change = function( next ) {
 };
 
 //------------------------------------------------------------------------------
+//  状態をすぐに遷移する
+//
+//  @param[in] next 遷移先の状態
+//------------------------------------------------------------------------------
+StateControl.prototype.changeImmediately = function ( next ) {
+    this.change( next );
+    this.update();
+};
+
+//------------------------------------------------------------------------------
 //  最初の状態に遷移する
 //------------------------------------------------------------------------------
-StateControl.prototype.changeFirst = function() {
-    this.change( this.first );
+StateControl.prototype.changeInitState = function() {
+    this.change( this.initState );
 };
 
 //------------------------------------------------------------------------------
@@ -52,7 +56,7 @@ StateControl.prototype.get = function() {
 };
 
 //------------------------------------------------------------------------------
-//  現在のフレーム数を取得する
+//  現在の状態に遷移してからのフレーム数を取得する
 //
 //  @return frame 現在のフレーム数
 //------------------------------------------------------------------------------

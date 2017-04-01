@@ -21,8 +21,8 @@ TableView = function( x, y, w, h ) {
     TouchObject.call( self, x, y, w, h );
 
     //  スクロール速度
-    self.acc = { x:0, y:0 };
-    self.spd = { x:0, y:0 };
+    self.acc = new VEC2();
+    self.spd = new VEC2();
 
     //  TableView に表示される項目のリスト
     self.cellList = [];

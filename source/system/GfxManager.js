@@ -14,44 +14,47 @@
 //------------------------------------------------------------------------------
 GfxManager = function( width, height ) {
 
-    var self = this instanceof GfxManager
-             ? this
-             : Object.create( GfxManager.prototype );
-
     //  描画リストの生成
-    self.drawList = new Array();
+    this.drawList = new Array();
 
     //  Canvas の生成
-    self.canvas = document.createElement( 'canvas' );
-  	self.canvas.width  = width;
-  	self.canvas.height = height;
-  	document.body.appendChild( self.canvas );
+    this.canvas = document.createElement( 'canvas' );
+  	this.canvas.width  = width;
+  	this.canvas.height = height;
+  	document.body.appendChild( this.canvas );
 
     //  context の取得
-    self.context = self.canvas.getContext( '2d' );
+    this.context = this.canvas.getContext( '2d' );
 
     //  幅と高さ
-    self.width = width;
-    self.height= height;
+    this.width = width;
+    this.height= height;
 
     //  GfxObject が用いるグラフィクスマネージャ用変数に設定
-    systemGfxManager = self;
+    systemGfxManager = this;
 
-    return self;
+    this.camera = new Camera();
+
+    return this;
 };
 
 //------------------------------------------------------------------------------
 //  Canvasの大きさを取得
-//
-//  @return VEC2 幅と高さ
 //------------------------------------------------------------------------------
 GfxManager.prototype.getCanvasSize = function() {
-    return { x:this.width, y:this.height };
+    return new VEC2( this.width, this.height );
 };
 
 GfxManager.prototype.getScreenSize = function() {
     window.scrollTo(0,0);
-    return{ x:window.innerWidth, y:window.innerHeight };
+    return new VEC2( window.innerWidth, window.innerHeight );
+};
+
+//------------------------------------------------------------------------------
+//  カメラを設定
+//------------------------------------------------------------------------------
+GfxManager.prototype.setCamera = function( camera ) {
+    this.camera = camera;
 };
 
 //------------------------------------------------------------------------------
@@ -67,12 +70,20 @@ GfxManager.prototype.update = function() {
     _context.setTransform( 1, 0, 0, 1, 0, 0 );
     _context.clearRect( 0, 0, this.width, this.height );
 
+    //  描画リストに登録されたオブジェクトの描画前処理
+    for( var i=0,l=_drawList.length; i<l; i++){
+        _drawList[ i ].viewMtx = this.camera.getViewMatrix();
+        _drawList[ i ].preproc( _context );
+    }
+
     //  描画リストに登録されたオブジェクトの描画処理
     for( var i=0,l=_drawList.length; i<l; i++){
-        var _drawObject = _drawList[ i ];
-        _drawObject.preproc();
-        _drawObject.proc( _context );
-        _drawObject.postproc();
+        _drawList[ i ].proc( _context );
+    }
+
+    //  描画リストに登録されたオブジェクトの描画後処理
+    for( var i=0,l=_drawList.length; i<l; i++){
+        _drawList[ i ].postproc( _context );
     }
 
     //  描画リストを空にする

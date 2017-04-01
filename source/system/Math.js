@@ -41,7 +41,7 @@ Math.rand = Math.rand || function( arg0, arg1 ) {
 //  @param[in] rad 変換する角度[rad]
 //  @return    deg 変換後の角度[deg]
 //------------------------------------------------------------------------------
-Math.radToDeg = Math.radToDeg || function( rad ) {
+Math.rad2Deg = Math.rad2Deg || function( rad ) {
     return 180 / Math.PI * rad;
 };
 
@@ -51,7 +51,7 @@ Math.radToDeg = Math.radToDeg || function( rad ) {
 //  @param[in] deg 変換する角度[deg]
 //  @return    rad 変換後の角度[rad]
 //------------------------------------------------------------------------------
-Math.degToRad = Math.degToRad || function( deg ) {
+Math.deg2Rad = Math.deg2Rad || function( deg ) {
     return Math.PI / 180 * deg;
 };
 

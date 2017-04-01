@@ -18,7 +18,7 @@ FaderBase = function() {
     var size = systemGfxManager.getCanvasSize();
 
     self.state = new StateControl( 'fadein' );
-    self.blind = new GfxRect( 0, 0, size.x, size.y, 'rgba(255,255,255,0)' );
+    self.blind = new Gfx2dRect( 0, 0, size.x, size.y, 'rgba(255,255,255,0)' );
     self.alpha = 0;
 
     return self;
@@ -34,7 +34,7 @@ FaderBase.prototype.load   = function() {};
 //
 //  MEMO: (ほとんどないはずだが) 必要に応じてオーバーライドすること
 //------------------------------------------------------------------------------
-FaderBase.prototype.update      = function() {
+FaderBase.prototype.update  = function() {
     var _state = this.state;
     _state.update();
     switch( _state.get() ){
@@ -51,7 +51,7 @@ FaderBase.prototype.update      = function() {
 //  MEMO: 必要に応じてオーバーライドすること
 //------------------------------------------------------------------------------
 FaderBase.prototype.draw = function() {
-    this.blind.draw();
+//    this.blind.draw();
 };
 
 

@@ -48,8 +48,8 @@ Block.prototype.checkHit = function( object ) {
     var dcx = ucx;
     var dcy = dly;
 
-    var movex = { x: spd.x, y: 0 };
-    var movey = { x: 0, y: spd.y };
+    var movex = new VEC2().set( spd.x, 0 );
+    var movey = new VEC2().set( 0, spd.y );
 
     var ret = false;
 

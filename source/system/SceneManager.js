@@ -13,20 +13,16 @@
 //------------------------------------------------------------------------------
 SceneManager = function( firstSceneName ) {
 
-    var self = this instanceof SceneManager
-             ? this
-             : Object.create( SceneManager.prototype );
+    this.state = new StateControl( 'first' );
+    this.fader = new FaderBase();
+    this.scene = null;
+    this.name  = firstSceneName;
+    this.sceneList = {};
+    this.sceneStack= [];
 
-    self.state = new StateControl( 'first' );
-    self.fader = new FaderBase();
-    self.scene = null;
-    self.name  = firstSceneName;
-    self.sceneList = {};
-    self.sceneStack= [];
+    this.nextSceneName = "";
 
-    self.nextSceneName = "";
-
-    return self;
+    return this;
 };
 
 //------------------------------------------------------------------------------
