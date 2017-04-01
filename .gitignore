@@ -1,0 +1,6 @@
+# Mac のファイル
+*.DS_Store
+*._*
+
+# VSCode のディレクトリ
+.vscode/
