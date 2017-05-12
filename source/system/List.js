@@ -29,8 +29,8 @@ List = function() {
 //------------------------------------------------------------------------------
 //  @brief 格納数の取得
 //------------------------------------------------------------------------------
-List.prottype.getLength = function() { return length; };
-List.prottype.getSize = function() { return length; };
+List.prototype.getLength = function() { return this.length; };
+List.prototype.getSize = function() { return this.length; };
 
 //------------------------------------------------------------------------------
 //  @brief 添え字アクセス
@@ -47,18 +47,34 @@ List.prototype.at = function( index ) {
 };
 
 //------------------------------------------------------------------------------
+//  @brief 列挙操作
+//------------------------------------------------------------------------------
+List.prototype.forEach = function( callback ) {
+    for(var node = this.head; node != null; node = node.next) {
+        callback( node.data );
+    }
+};
+
+List.prototype.forEachReverse = function( callback ) {
+    for(var node = this.tail; node != null; node = node.prev) {
+        callback( node.data );
+    }
+};
+
+
+//------------------------------------------------------------------------------
 //  @brief 先頭/末尾へのpush/pop
 //------------------------------------------------------------------------------
-List.prottype.pushFront = function( data ) { this.inserPrev( this.head, data ); };
-List.prottype.pushBack  = function( data ) { this.insertNext( this.tail, data ); };
-List.prottype.popFront  = function() { return this.remove( this.head ); };
-List.prottype.popBack   = function() { return this.remove( this.tail ); };
+List.prototype.pushFront = function( data ) { this.insertPrev( this.head, data ); };
+List.prototype.pushBack  = function( data ) { this.insertNext( this.tail, data ); };
+List.prototype.popFront  = function() { return this.remove( this.head ); };
+List.prototype.popBack   = function() { return this.remove( this.tail ); };
 
 
 //------------------------------------------------------------------------------
 //  @brief 前に挿入
 //------------------------------------------------------------------------------
-List.prottype.insertPrev = function( node, data ) {
+List.prototype.insertPrev = function( node, data ) {
     if(this.length == 0) {
         node = new Node( data, null, null );
         this.head = node;
@@ -68,13 +84,13 @@ List.prottype.insertPrev = function( node, data ) {
         node.prev = new Node(data, node.prev, node);
         if( node == this.head ) this.head = node.prev;
     }
-    length++;
+    this.length++;
 };
 
 //------------------------------------------------------------------------------
 //  @brief 次に挿入
 //------------------------------------------------------------------------------
-List.prottype.inserNext = function( node, data ) {
+List.prototype.insertNext = function( node, data ) {
     if(this.length == 0) {
         node = new Node( data, null, null );
         this.head = node;
@@ -84,13 +100,13 @@ List.prottype.inserNext = function( node, data ) {
         node.next = new Node(data, node, node.next);
         if(node == this.tail) this.tail = node.next;
     }
-    length++;
+    this.length++;
 };
 
 //------------------------------------------------------------------------------
 //  @brief 削除
 //------------------------------------------------------------------------------
-List.prottype.remove = function( node ) {
+List.prototype.remove = function( node ) {
 
     if(this.length == 1) {
         this.head = null;
@@ -110,10 +126,9 @@ List.prottype.remove = function( node ) {
             node.next.prev = node.prev;
         }
     }
-    length--;
+    this.length--;
 
     return node.data;
 };
-
 
 })(window);
