@@ -39,7 +39,7 @@ HidManager = function() {
         var touches = touchEvent.changedTouches;
         for( var i=0,l=touches.length; i<l; i++) {
             var touch = touches[i];
-            var index = touches[i].identifier % ( self.touches.length - 1 );
+            var index = Math.abs(touches[i].identifier) % ( self.touches.length - 1 );
             delegate.call( self.touches[ index ], touch.clientX, touch.clientY );
         }
     }
