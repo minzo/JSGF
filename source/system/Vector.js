@@ -247,7 +247,7 @@ VEC3.squaredDistance = function( V1, V2 ) {
 };
 // 距離
 VEC3.distance = function( V1, V2 ) {
-    return Math.sqrt( VEC2.squaredDistance( V1, V2 ) );
+    return Math.sqrt( VEC3.squaredDistance( V1, V2 ) );
 };
 
 // 単位ベクトルを取得
