@@ -23,7 +23,8 @@ Col2dComponent.prototype = new Component();
 Col2dComponent.isVisibleCollision = false;
 
 //------------------------------------------------------------------------------
-// 計算処理
+// 計算処理 - Component は calc() が必ず呼ばれます
+// @param owner このコンポーネントをアタッチしているオブジェクト
 //------------------------------------------------------------------------------
 Col2dComponent.prototype.calc = function( owner ) {
 

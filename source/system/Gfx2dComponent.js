@@ -63,7 +63,8 @@ Gfx2dComponent = function( w, h, style ) {
 Gfx2dComponent.prototype = new Component();
 
 //------------------------------------------------------------------------------
-// 計算処理
+// 計算処理 - Component は calc() が必ず呼ばれます
+// @param owner このコンポーネントをアタッチしているオブジェクト
 //------------------------------------------------------------------------------
 Gfx2dComponent.prototype.calc = function( owner ) {
     Component.prototype.calc.call( this, owner );
@@ -126,10 +127,8 @@ Gfx2dLine.prototype.proc = function( context ) {
 //  @param[in] w      幅
 //  @param[in] h      高さ
 //  @param[in] style  Gfx2dStyle スタイル
-//  @param[in] isEdge    枠のみ描画するか
-//  @param[in] lineWidth 線の太さ
 //------------------------------------------------------------------------------
-Gfx2dRect = function( w, h, style, isEdge, lineWidth ) {
+Gfx2dRect = function( w, h, style ) {
     Gfx2dComponent.call( this, w, h, style );
     return this;
 };
@@ -152,10 +151,9 @@ Gfx2dRect.prototype.proc = function( context ) {
 //  Gfx2dCircle
 //
 //  @param[in] r      半径
-//  @param[in] isEdge 線で描画
 //  @param[in] style  Gfx2dStyle スタイル
 //------------------------------------------------------------------------------
-Gfx2dCircle = function( r, style, isEdge, lineWidth ) {
+Gfx2dCircle = function( r, style ) {
     Gfx2dComponent.call( this, r, r, style );
     return this;
 };
