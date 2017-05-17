@@ -20,12 +20,8 @@
 //  コンストラクタ
 //------------------------------------------------------------------------------
 SceneTemplate = function() {
-    var self = this instanceof SceneTemplate
-             ? this
-             : Object.create( SceneTemplate.prototype );
-    SceneBase.call( self );
-
-    return self;
+    SceneBase.call( this );
+    return this;
 };
 SceneTemplate.prototype = new SceneBase();
 gScnMngr.entryScene( SceneTemplate, 'SceneTemplate' );
