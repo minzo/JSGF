@@ -39,25 +39,25 @@ SceneGameMain.prototype.init   = function() {
     systemGfxManager.setCamera( this.camera );
 
     this.object = new BaseObject();
-    this.object.attachComponent( 'GfxCircle', new Gfx2dCircle(20, Gfx2dStyle.FillGreen()) );
-    this.object.attachComponent( 'ColCircle', new Col2dCircle(20) );
-    this.object.attachComponent( 'TouchCircle', new TouchCircle(10) );
+    this.object.attachComponent( new Gfx2dCircle(20, Gfx2dStyle.FillGreen()) );
+    this.object.attachComponent( new Col2dCircle(20) );
+    this.object.attachComponent( new TouchCircle(10) );
     this.object.setPos( 0, 0, 0 );
 
     this.child = new BaseObject();
-    this.child.attachComponent( 'Rect', new Gfx2dRect(20, 20, Gfx2dStyle.FillGreen() ));
-    this.child.attachComponent( 'ColCircle', new Col2dCircle( 20 ));
+    this.child.attachComponent( new Gfx2dRect(20, 20, Gfx2dStyle.FillGreen() ));
+    this.child.attachComponent( new Col2dCircle( 20 ));
     this.child.setPos( 130, 0, 0 );
     this.child.setParent( this.object );
 
     this.rect1 = new BaseObject();
-    this.rect1.attachComponent( 'Rect', new Gfx2dRect(10, 10, Gfx2dStyle.FillGreen() ));
-    this.rect1.attachComponent( 'TouchRect', new TouchRect(10, 10));
+    this.rect1.attachComponent( new Gfx2dRect(10, 10, Gfx2dStyle.FillGreen() ));
+    this.rect1.attachComponent( new TouchRect(10, 10));
     this.rect1.setPos( 30, 30, 0 );
     this.rect1.setParent( this.child );
 
     this.rect2 = new BaseObject();
-    this.rect2.attachComponent( 'Image', new Gfx2dImage(30, 30, 'home-icon' ));
+    this.rect2.attachComponent( new Gfx2dImage(30, 30, 'home-icon' ));
     this.rect2.setPos( -30, -30, 0 )
     this.rect2.setParent( this.child );
 
@@ -78,7 +78,7 @@ SceneGameMain.prototype.update = function() {
 
     var size = systemGfxManager.getCanvasSize();
 
-    if(touch != null)
+    if(touch != null && touch.isHld())
     {
         var vec = this.camera.getPos().add( touch.spd.toVEC3() );
         this.camera.setPos( vec.x, vec.y, vec.z );

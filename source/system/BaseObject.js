@@ -45,8 +45,8 @@ BaseObject.prototype.setParent = function( parent ) {
 //------------------------------------------------------------------------------
 // Component
 //------------------------------------------------------------------------------
-BaseObject.prototype.attachComponent = function( name, component ) {
-    return this.components[ name ] = component;
+BaseObject.prototype.attachComponent = function( component ) {
+    return this.components[ component.constructor.name ] = component;
 };
 BaseObject.prototype.detachComponent = function() {
     delete this.components[ name ];
