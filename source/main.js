@@ -16,15 +16,18 @@ function init() {
     gFileMngr= new FileManager();
     gEfxMngr = new EfxManager();
     gSndMngr = new SndManager();
-    gGfxMngr = new GfxManager( screen.x, screen.y );
+    gGfxMngr = new GfxManager( GfxManager.Mode2d, screen.x, screen.y );
     gDbgMngr = new DbgManager( screen.x, screen.y );
-    gScnMngr = new SceneManager( 'SceneGameMain' );
+    gScnMngr = new SceneManager( 'SceneSpring' );
     gObjMngr = new ObjectManager();
+    gPhysMngr= new RigidBodyManager();
 
     gFileMngr.loadSound( './resource/webapp/mute.wav' );
 
     gScnMngr.entryScene( SceneGameMain,'SceneGameMain' );
+    gScnMngr.entryScene( SceneSpring, 'SceneSpring' );
     gScnMngr.entryScene( SceneIK,'SceneIK' );
+
 //    gScnMngr.entryScene( SceneMultistageRocket, 'SceneMultistageRocket' );
 };
 
@@ -35,11 +38,13 @@ function main() {
     gHID.update();
     gFileMngr.update();
     gScnMngr.update();
+    gPhysMngr.update();
     gObjMngr.update();
     gEfxMngr.update();
     gSndMngr.update();
     gGfxMngr.update();
     gDbgMngr.update();
+
     gObjMngr.postUpdate();
 
     var proc_time = Date.now() - start;
@@ -50,5 +55,6 @@ function main() {
 
     var interval = 1000 / FPS - proc_time;
 
-    setTimeout( main, interval > 0 ? interval : 0 );
+    requestAnimationFrame( main );
+//    setTimeout( main, interval > 0 ? interval : 0 );
 };

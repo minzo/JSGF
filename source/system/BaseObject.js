@@ -51,6 +51,9 @@ BaseObject.prototype.attachComponent = function( component ) {
 BaseObject.prototype.detachComponent = function() {
     delete this.components[ name ];
 };
+BaseObject.prototype.findComponent = function( componentConstructor ) {
+    return this.components[ componentConstructor.name ];
+};
 
 
 //------------------------------------------------------------------------------
@@ -61,9 +64,9 @@ BaseObject.prototype.calc = function() {};
 
 
 //------------------------------------------------------------------------------
-// update - 更新処理
+// ObjectManager から呼ばれる
 //------------------------------------------------------------------------------
-BaseObject.prototype.update = function() {
+BaseObject.prototype.proc = function() {
 
     // 座標更新
     this.transform.calc();
@@ -79,7 +82,7 @@ BaseObject.prototype.update = function() {
         components[ name ].calc( this );
     }
 };
-BaseObject.prototype.postUpdate = function() {
+BaseObject.prototype.postproc = function() {
     this.transform.postcalc();
 };
 

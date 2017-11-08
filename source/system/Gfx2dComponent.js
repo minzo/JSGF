@@ -51,7 +51,6 @@ Gfx2dComponent = class extends Component
         super();
 
         this.transform = new Transform();
-        this.rigidbody = null;
 
         this.viewMtx  = new MTX34();
         this.matrix   = new MTX34();

@@ -7,9 +7,7 @@
 (function( window, undefined ) {
 
 // コリジョンの可視化
-var isVisibleCollision = false;
-
-
+var isVisibleCollision = true;
 
 //------------------------------------------------------------------------------
 //  Col2dComponent
@@ -70,23 +68,24 @@ Col2dComponent = class extends Component
     //--------------------------------------------------------------------------
     //  衝突判定関数
     //--------------------------------------------------------------------------
-    isHitPoint( collision, callback ) {}
-    isHitCircle( collision, callback ) {}
-    isHitRect( collision, callback ) {}
+    isHitPoint( collision, callback )  { throw new Error("NOT_IMPLEMENT"); }
+    isHitCircle( collision, callback ) { throw new Error("NOT_IMPLEMENT"); }
+    isHitRect( collision, callback )   { throw new Error("NOT_IMPLEMENT"); }
+    isHitGround( collision, callback ) { throw new Error("NOT_IMPLEMENT"); }
 
     //--------------------------------------------------------------------------
     //  円と線の交差判定
     //--------------------------------------------------------------------------
     isHitCircleLine( circle, posA, posB )
     {
-        var center = circle.getWorldPos();
-        var radius = circle.getWorldScale().x;
+        var center = circle.transform.getWorldPos();
+        var radius = circle.transform.getWorldScale().x;
 
         var S = VEC2.sub( posA, posB );
         var A = VEC2.sub( center, posA );
         var B = VEC2.sub( center, posB );
 
-        var d = Math.abs( VEC2.cross( A, S ) ) / VEC2.dist( S );
+        var d = Math.abs( VEC2.cross( A, S ) ) / S.length();
 
         if( d < radius ) {
             if( VEC2.dot( A, S ) * VEC2.dot( B, S ) <= 0 ){ return true; }
@@ -156,8 +155,8 @@ Col2dComponent = class extends Component
     //--------------------------------------------------------------------------
     isHitCircleRect( circle, rect )
     {
-        var center = circle.getWorldPos();
-        var radius = circle.getWorldScale().x;
+        var center = circle.transform.getWorldPos();
+        var radius = circle.transform.getWorldScale().x;
 
         var vertices = this.calcRectWorldVertices( rect );
 
@@ -200,6 +199,14 @@ Col2dComponent = class extends Component
         return VEC2.cross( U0, V0 ) >= 0 && VEC2.cross( U1, V1 ) >= 0 &&
             VEC2.cross( U2, V2 ) >= 0 && VEC2.cross( U3, V3 ) >= 0;
     }
+
+    //--------------------------------------------------------------------------
+    // 円と地面の衝突判定
+    //--------------------------------------------------------------------------
+    isHitCircleGround( circle, ground )
+    {
+        throw new Error("NOT_IMPLEMENT");
+    }
 };
 
 //------------------------------------------------------------------------------
@@ -219,7 +226,6 @@ Col2dRect = class extends Col2dComponent
         super( new Gfx2dRect( 1.0, 1.0, Gfx2dStyle.EdgeRed() ));
         this.transform.setScale( w, h, 1.0 );
     }
-
 
     //--------------------------------------------------------------------------
     //  衝突判定関数
@@ -291,6 +297,35 @@ Col2dCircle = class extends Col2dComponent
         if( isHit && callback != undefined ) callback();
         return isHit;
     }
+};
+
+
+//------------------------------------------------------------------------------
+//  Col2dGround
+//------------------------------------------------------------------------------
+Col2dGround = class extends Col2dComponent
+{
+    //--------------------------------------------------------------------------
+    //  コンストラクタ
+    //--------------------------------------------------------------------------
+    constructor()
+    {
+        super( new Gfx2dLine( -500.0, 0.0, 500.0, 0.0, Gfx2dStyle.EdgeRed()) );
+    }
+
+    //--------------------------------------------------------------------------
+    //  衝突判定関数
+    //  @param[in] collision 衝突判定対象のオブジェクト
+    //  @param[in] callback  衝突応答コールバック関数
+    //  @return    bool      衝突していれば true
+    //--------------------------------------------------------------------------
+    isHirCircle( collision, callback )
+    {
+        var isHit = this.isHitCircleGround( collision, this );
+        if( isHit && callback != undefined ) callback();
+        return isHit;
+    }
+
 };
 
 })( window );

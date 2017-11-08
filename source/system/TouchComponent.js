@@ -28,7 +28,7 @@ TouchComponent = class extends Component
     //--------------------------------------------------------------------------
     calc( owner )
     {
-        super( owner );
+        super.calc( owner );
 
         this.state.update();
 

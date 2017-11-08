@@ -20,11 +20,9 @@ ObjectManager = function() {
 //------------------------------------------------------------------------------
 ObjectManager.prototype.update = function() {
 
-    var objs = this.objectList;
-
     // 順番に処理
-    for( var i=0,l=this.objectList.length; i<l; i++) {
-        objs[ i ].update();
+    for( var objs=this.objectList, i=0,l=objs.length; i<l; i++) {
+        objs[ i ].proc();
     }
 };
 
@@ -33,11 +31,9 @@ ObjectManager.prototype.update = function() {
 //------------------------------------------------------------------------------
 ObjectManager.prototype.postUpdate = function() {
 
-    var objs = this.objectList;
-
     // Post 処理
-    for( var i=0,l=objs.length; i<l; i++) {
-        objs[ i ].postUpdate();
+    for( var objs=this.objectList, i=0,l=objs.length; i<l; i++) {
+        objs[ i ].postproc();
     }
 
     // 処理リストを空にする

@@ -6,13 +6,17 @@
 
 (function( window, undefined ) {
 
+var gl = null;
+var context = null;
+
 //------------------------------------------------------------------------------
 //  コンストラクタ
 //
+//  @param[in] mode   描画モード(2d|3d)
 //  @param[in] width  生成する canvas の幅
 //  @param[in] height 生成する canvas の高さ
 //------------------------------------------------------------------------------
-GfxManager = function( width, height ) {
+GfxManager = function( mode ,width, height ) {
 
     //  描画リストの生成
     this.drawList = new Array();
@@ -24,7 +28,28 @@ GfxManager = function( width, height ) {
   	document.body.appendChild( this.canvas );
 
     //  context の取得
-    this.context = this.canvas.getContext( '2d' );
+    this.gl = this.context = this.canvas.getContext( mode );
+    context = this.context;
+    gl      = this.gl;
+
+    if(mode == GfxManager.Mode2d)
+    {
+        this.context.miClearScreen = function() {
+            gl.clearRect( 0, 0, width, height );
+        };
+    }
+    else
+    {
+        this.context.miClearScreen = function() {
+            gl.enable( gl.DEPTH_TEST );
+            gl.depthFunc( gl.LEQUAL );
+            gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
+            gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+            gl.viewport( 0, 0, width, height );
+        };
+    }
+
+    this.context.setTransform  = this.context.setTransform || function() {};
 
     //  幅と高さ
     this.width = width;
@@ -37,6 +62,9 @@ GfxManager = function( width, height ) {
 
     return this;
 };
+
+GfxManager.Mode2d = '2d';
+GfxManager.Mode3d = 'webgl';
 
 //------------------------------------------------------------------------------
 //  Canvasの大きさを取得
@@ -68,7 +96,7 @@ GfxManager.prototype.update = function() {
 
     //  canvas の初期化
     _context.setTransform( 1, 0, 0, 1, 0, 0 );
-    _context.clearRect( 0, 0, this.width, this.height );
+    _context.miClearScreen();
 
     //  描画リストに登録されたオブジェクトの描画前処理
     for( var i=0,l=_drawList.length; i<l; i++){
